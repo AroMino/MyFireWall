@@ -43,7 +43,7 @@ void SystemEnvironment::getAvailableInterfaceFromSystem()
 
 void SystemEnvironment::getAvailablePortsFromSystem()
 {
-    QFile file("/home/arrow/MIT/L2/cpp/qtcreator/MyFireWall/services.txt");
+    QFile file("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/services.txt");
 
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)){
         QTextStream stream(&file);
@@ -142,12 +142,12 @@ int SystemEnvironment::testPassword(QString password)
     process.start(command, args);
     process.write(password.toUtf8() + "\n");    // Écrivez le mot de passe dans l'entrée standard du processus
 
-    if (!process.waitForStarted(100)) {
+    if (!process.waitForStarted(200)) {
         qDebug() << "Erreur: Impossible de démarrer la commande.";
         return 0;
     }
 
-    if (!process.waitForFinished(100)){
+    if (!process.waitForFinished(200)){
         qDebug() << "Erreur: La commande n'a pas pu être exécutée correctement.\n";
         process.kill();
         return 0;
@@ -212,7 +212,7 @@ void SystemEnvironment::getCurrentSystemFilter(QString password)
                 if(li[4] == "anywhere"){
                     rule->setDestination("");
                 }
-                else rule->setDestination(li[3]);
+                else rule->setDestination(li[4]);
 
                 // Protocole et port
                 if(li[1] == "all"){

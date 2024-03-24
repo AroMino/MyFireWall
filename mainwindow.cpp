@@ -30,8 +30,6 @@ MainWindow::MainWindow(QWidget *parent, QString password)
     /// Désactive le bouton remove au débutceptDrops(true);
     ui->remove->setDisabled(true);
 
-//    ui->tableView->setHorizontalScrollBar(ui->horizontalScrollBar);
-
     /// Titres des colonnes du model
     model->setHeaderData(0,Qt::Horizontal,"N°");
     model->setHeaderData(1,Qt::Horizontal,"Chain");
@@ -43,6 +41,8 @@ MainWindow::MainWindow(QWidget *parent, QString password)
     model->setHeaderData(7,Qt::Horizontal,"Source");
     model->setHeaderData(8,Qt::Horizontal,"Destination");
     model->setHeaderData(9,Qt::Horizontal,"Machine");
+
+    ui->tableView->setColumnWidth(0,10);
 
     ui->tableView->setSortingEnabled(true);                 // active le triage
     ui->tableView->verticalHeader()->setVisible(false);     // cache les numéros de ligne
@@ -72,8 +72,8 @@ MainWindow::MainWindow(QWidget *parent, QString password)
     });
 
     this->setPassword(password);
-    this->system->getCurrentSystemFilter(this->password);
-    this->displayFilter(this->system->getFilter());
+//    this->system->getCurrentSystemFilter(this->password);
+//    this->displayFilter(this->system->getFilter());
 
     ui->apply->setDisabled(true);
 
@@ -83,6 +83,14 @@ MainWindow::MainWindow(QWidget *parent, QString password)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+SystemEnvironment* MainWindow::getSystemEnvironment(){
+    return this->system;
+}
+
+QString MainWindow::getPassword(){
+    return this->password;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -254,7 +262,7 @@ void MainWindow::addRuleToModel(const Rule* r)
                 search->setMinimumSize(180,30);
                 portList->addSearch(search);
 
-                connect(search,&QLineEdit::textChanged,portList,[=](){
+                connect(search,&QLineEdit::textChanged,portList,[=]() mutable -> void {
                     portList->clear();
                     for(auto it = ports.begin() ; it != ports.end() ; it++){
                         QString s = it.key()+" "+it.value();
@@ -346,6 +354,39 @@ void MainWindow::setMenuConnections()
     connect(ui->actionQuit,&QAction::triggered,this,[&](){
         this->deleteLater();
     });
+
+    connect(ui->actionReset,&QAction::triggered,this,[&](){
+        QMessageBox* dialog = new QMessageBox(this);
+        //    int a = QMessageBox::question(this,"Clear","Test?",QMessageBox::Cancel | QMessageBox::Ok);
+        dialog->setWindowTitle("Reset");
+        dialog->setWindowIcon(QIcon(""));
+        dialog->setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+        dialog->setText("Do you really want to reset ?");
+        dialog->resize(100,500);
+        int a = dialog->exec();
+        if(a == QMessageBox::Ok){
+            /// Clear
+            while(model->rowCount() > 0) model->removeRow(0);
+
+            /// Display SystemFilter
+            this->displayFilter(this->system->getFilter());
+            ui->apply->setDisabled(true);
+        }
+    });
+
+    connect(ui->actionClear,&QAction::triggered,this,[&](){
+        QMessageBox* dialog = new QMessageBox(this);
+        //    int a = QMessageBox::question(this,"Clear","Test?",QMessageBox::Cancel | QMessageBox::Ok);
+        dialog->setWindowTitle("Clear");
+        dialog->setWindowIcon(QIcon(""));
+        dialog->setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+        dialog->setText("Do you really want to clear ?");
+        dialog->resize(100,500);
+        int a = dialog->exec();
+
+        if(a == QMessageBox::Ok) while(model->rowCount() > 0) model->removeRow(0);
+    });
+
 }
 
 void MainWindow::on_apply_clicked()
@@ -355,7 +396,7 @@ void MainWindow::on_apply_clicked()
     ui->apply->setDisabled(true);
     ui->tableView->selectionModel()->clearSelection();
 
-    QFile file("/home/arrow/MIT/L2/cpp/qtcreator/MyFireWall/apply.sh");
+    QFile file("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/apply.sh");
     if(file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
 
 
@@ -403,7 +444,7 @@ void MainWindow::on_apply_clicked()
     }
     file.close();
 
-    this->system->applyFilter("/home/arrow/MIT/L2/cpp/qtcreator/MyFireWall/apply.sh",this->password);
+    this->system->applyFilter("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/apply.sh",this->password);
 }
 
 
@@ -425,18 +466,4 @@ void MainWindow::on_output_currentTextChanged(const QString &arg1)
     ui->apply->setEnabled(true);
 }
 
-
-void MainWindow::on_clear_clicked()
-{
-    QMessageBox* dialog = new QMessageBox(this);
-//    int a = QMessageBox::question(this,"Clear","Test?",QMessageBox::Cancel | QMessageBox::Ok);
-    dialog->setWindowTitle("Clear");
-    dialog->setWindowIcon(QIcon(""));
-    dialog->setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
-    dialog->setText("Do you really want to clear ?");
-    dialog->resize(100,500);
-    int a = dialog->exec();
-
-    if(a == QMessageBox::Ok) while(model->rowCount() > 0) model->removeRow(0);
-}
 

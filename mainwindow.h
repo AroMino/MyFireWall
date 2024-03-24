@@ -23,11 +23,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     MainWindow(QWidget *parent = nullptr, QString password = "");
     ~MainWindow();
+
     void addRuleToModel(const Rule* r);
     void displayFilter(QList<Rule *> rules);
     void setPassword(QString password);
-
     void setMenuConnections();
+
+    QString getPassword();
+    SystemEnvironment* getSystemEnvironment();
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -38,12 +41,8 @@ private slots:
     void on_apply_clicked();
 
     void on_input_currentTextChanged(const QString &arg1);
-
     void on_forward_currentTextChanged(const QString &arg1);
-
     void on_output_currentTextChanged(const QString &arg1);
-
-    void on_clear_clicked();
 
 public slots:
     void receiveRule(const Rule* r);

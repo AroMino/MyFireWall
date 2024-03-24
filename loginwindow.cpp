@@ -3,6 +3,7 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include "mythread.h"
 
 LoginWindow::LoginWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -65,6 +66,15 @@ void LoginWindow::on_start_clicked()
                 timer->start();
                 ui->status->setText("Loading ...");
                 w = new MainWindow(nullptr,password);
+
+                MyThread* th = new MyThread(w);
+                th->start();
+
+                /// quand l'operation est terminée
+                connect(th,&MyThread::finished,this,[&](){
+
+                });
+
                 QObject::connect(timer, &QTimer::timeout, this, [=]()mutable -> void{
                     value += 2;
                     ui->progressBar->setValue(value);
@@ -75,7 +85,8 @@ void LoginWindow::on_start_clicked()
                             QTimer::singleShot(1000,this,[=]()mutable -> void{
                                 ui->progressBar->hide();
                                 this->hide();
-                                QTimer::singleShot(1000,this,[=]()mutable -> void{
+                                QTimer::singleShot(500,this,[=]()mutable -> void{
+                                    w->displayFilter(w->getSystemEnvironment()->getFilter());
                                     w->show();
                                 });
                             });

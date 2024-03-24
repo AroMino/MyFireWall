@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     mycombobox.cpp \
     mylist.cpp \
+    mythread.cpp \
     rule.cpp \
     systemenvironment.cpp
 
@@ -24,6 +25,7 @@ HEADERS += \
     mainwindow.h \
     mycombobox.h \
     mylist.h \
+    mythread.h \
     rule.h \
     systemenvironment.h
 

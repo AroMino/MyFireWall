@@ -355,19 +355,6 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
      <string>Apply</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="clear">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>550</y>
-      <width>71</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Clear</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -390,7 +377,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     <addaction name="separator"/>
     <addaction name="actionStatus"/>
     <addaction name="actionReset"/>
-    <addaction name="actionRefresh"/>
+    <addaction name="actionClear"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -452,9 +439,9 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     <string>Reset</string>
    </property>
   </action>
-  <action name="actionRefresh">
+  <action name="actionClear">
    <property name="text">
-    <string>Refresh</string>
+    <string>Clear</string>
    </property>
   </action>
   <action name="actionQuit">
