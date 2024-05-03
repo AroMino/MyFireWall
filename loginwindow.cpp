@@ -82,10 +82,10 @@ void LoginWindow::on_start_clicked()
                         timer->stop();
                         QTimer::singleShot(1000,this,[=]()mutable -> void{
                             ui->status->hide();
-                            QTimer::singleShot(1000,this,[=]()mutable -> void{
+                            QTimer::singleShot(1000,this,[&]()mutable -> void{
                                 ui->progressBar->hide();
                                 this->hide();
-                                QTimer::singleShot(500,this,[=]()mutable -> void{
+                                QTimer::singleShot(500,this,[&]()mutable -> void{
                                     w->displayFilter(w->getSystemEnvironment()->getFilter());
                                     w->show();
                                 });
