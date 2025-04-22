@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QDebug>
+
 
 SystemEnvironment::SystemEnvironment()
 {
@@ -17,6 +19,7 @@ SystemEnvironment::~SystemEnvironment()
 
 void SystemEnvironment::getAvailableInterfaceFromSystem()
 {
+
     QProcess process;
 
     // Définition de la commande à exécuter
@@ -28,13 +31,13 @@ void SystemEnvironment::getAvailableInterfaceFromSystem()
     QByteArray result = process.readAllStandardOutput();
 
     /// Traitements
+
     QStringList l, list;
     l = QString::fromUtf8(result).split("\n");
-
     for(auto s : l)
     {
-        if(s[0] == ' ' || s.isEmpty()) l.removeOne(s);
-        else{
+        if(!s.isEmpty() && s[0] != ' ')
+        {
             list.append(s.split(":")[0]);
         }
     }
@@ -43,7 +46,7 @@ void SystemEnvironment::getAvailableInterfaceFromSystem()
 
 void SystemEnvironment::getAvailablePortsFromSystem()
 {
-    QFile file("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/services.txt");
+    QFile file("/home/arrow/MIT/L2/S3/Cpp/qtcreator/MyFireWall/services.txt");
 
     if(file.open(QIODevice::ReadOnly | QIODevice::Text)){
         QTextStream stream(&file);
@@ -55,9 +58,8 @@ void SystemEnvironment::getAvailablePortsFromSystem()
             port = "";
             protocole = "";
             line = stream.readLine();
-
             QString tmp = "";
-            if(line[0] != "#"){
+            if(!line.isEmpty() && line[0] != "#"){
                 list = line.split("\t");
                 for(auto s : list){
                     if(!s.isEmpty()) tmp.append(s+" ");
@@ -67,7 +69,6 @@ void SystemEnvironment::getAvailablePortsFromSystem()
                     port = tmp.split(" ")[1].split("/")[0];
                     protocole = tmp.split(" ")[1].split("/")[1];
                 }
-//                qDebug() << protocole << " " << service << port;
                 if(! protocole.isEmpty()){
                     ports[protocole].insert(port,service);      // tcp => ((22 => ssh), ...), udp => (...)
                     services[protocole].insert(service,port);   // tcp => ((ssh => 22), ...), udp => (...)
@@ -77,13 +78,8 @@ void SystemEnvironment::getAvailablePortsFromSystem()
         }
         file.close();
         qInfo() << ports.size();
-//        for(auto key : ports.keys()){
-//            for(auto k : ports[key].keys()){
-//                qDebug() << key << " : " << k << " => " << ports[key].value(k);
-//            }
-//        }
     }
-    else qDebug() << "Echec lors de l'ouverture du fichier";
+    else qDebug() << "Echec lors de l'ouverture du fichier service";
 }
 
 QStringList SystemEnvironment::getInterfaces()
@@ -141,18 +137,16 @@ int SystemEnvironment::testPassword(QString password)
     QProcess process;
     process.start(command, args);
     process.write(password.toUtf8() + "\n");    // Écrivez le mot de passe dans l'entrée standard du processus
-
     if (!process.waitForStarted(200)) {
         qDebug() << "Erreur: Impossible de démarrer la commande.";
         return 0;
     }
 
-    if (!process.waitForFinished(200)){
+    if (!process.waitForFinished(800)){
         qDebug() << "Erreur: La commande n'a pas pu être exécutée correctement.\n";
         process.kill();
         return 0;
     }
-    qDebug() << "Authentifié";
     return 1;
 }
 
@@ -180,6 +174,7 @@ void SystemEnvironment::getCurrentSystemFilter(QString password)
 
     for(QString line : lines){
         /// Elimination des espaces en trop
+
         while(line.contains("  ")) line.replace("  "," ");
         if(!line.isEmpty()){
             if(line.contains("Chain")){
@@ -279,6 +274,7 @@ void SystemEnvironment::getCurrentSystemFilter(QString password)
                         rule->setMachine(lo.split("MAC ")[1].split(" ")[0]);
                     }
                 }
+
                 rules.append(rule);
             }
 

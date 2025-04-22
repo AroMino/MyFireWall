@@ -12,8 +12,6 @@ MyThread::MyThread(MainWindow* m)
 
 void MyThread::run()
 {
-//    QThread::sleep(0);
     m->getSystemEnvironment()->getCurrentSystemFilter(m->getPassword());
-//    m->displayFilter(m->getSystemEnvironment()->getFilter());
-
+    // QThread::sleep(5);
 }

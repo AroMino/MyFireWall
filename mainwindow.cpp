@@ -11,6 +11,9 @@
 #include <QProcess>
 #include <QStringList>
 #include <QListView>
+#include <QFile>
+#include <QIcon>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent, QString password)
     , model(new QStandardItemModel(0,10))
     , system(new SystemEnvironment())
 {
-
+    setWindowIcon(QIcon(":/icons/image.jpg"));
     ui->setupUi(this);
 
     /// Désactive le bouton remove au débutceptDrops(true);
@@ -72,6 +75,7 @@ MainWindow::MainWindow(QWidget *parent, QString password)
     });
 
     this->setPassword(password);
+
 //    this->system->getCurrentSystemFilter(this->password);
 //    this->displayFilter(this->system->getFilter());
 
@@ -396,7 +400,7 @@ void MainWindow::on_apply_clicked()
     ui->apply->setDisabled(true);
     ui->tableView->selectionModel()->clearSelection();
 
-    QFile file("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/apply.sh");
+    QFile file("/home/arrow/MIT/L2/S3/Cpp/qtcreator/MyFireWall/apply.sh");
     if(file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)){
 
 
@@ -444,7 +448,7 @@ void MainWindow::on_apply_clicked()
     }
     file.close();
 
-    this->system->applyFilter("/home/arrow/MIT/L2/Cpp/qtcreator/MyFireWall/apply.sh",this->password);
+    this->system->applyFilter("/home/arrow/MIT/L2/S3/Cpp/qtcreator/MyFireWall/apply.sh",this->password);
 }
 
 

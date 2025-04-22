@@ -32,9 +32,10 @@ void LoginWindow::keyPressEvent(QKeyEvent *event)
 
 void LoginWindow::on_start_clicked()
 {
-    this->password = ui->password->text();
-    SystemEnvironment* system = new SystemEnvironment();
 
+    this->password = ui->password->text();
+
+    SystemEnvironment* system = new SystemEnvironment();
     ui->password->hide();
     ui->passwordLabel->hide();
     ui->start->hide();
@@ -62,7 +63,7 @@ void LoginWindow::on_start_clicked()
         QTimer::singleShot(1000,this,[=]()mutable -> void{
             ui->progressBar->show();
             QTimer::singleShot(1000,this,[=]() mutable -> void {
-                timer->setInterval(10);
+                timer->setInterval(100);
                 timer->start();
                 ui->status->setText("Loading ...");
                 w = new MainWindow(nullptr,password);
@@ -71,26 +72,27 @@ void LoginWindow::on_start_clicked()
                 th->start();
 
                 /// quand l'operation est terminée
-                connect(th,&MyThread::finished,this,[&](){
-
+                connect(th,&MyThread::finished,this,[=, &w](){
+                    timer->stop();
+                    ui->progressBar->setValue(100);
+                    QTimer::singleShot(1000,this,[=,&w]()mutable -> void{
+                        ui->status->hide();
+                        QTimer::singleShot(1000,this,[=,&w]()mutable -> void{
+                            ui->progressBar->hide();
+                            this->hide();
+                            QTimer::singleShot(500,this,[=, &w]()mutable -> void{
+                                w->displayFilter(w->getSystemEnvironment()->getFilter());
+                                w->show();
+                            });
+                        });
+                    });
                 });
 
                 QObject::connect(timer, &QTimer::timeout, this, [=]()mutable -> void{
-                    value += 2;
+                    value += 1;
                     ui->progressBar->setValue(value);
                     if (value >= 100) {
                         timer->stop();
-                        QTimer::singleShot(1000,this,[=]()mutable -> void{
-                            ui->status->hide();
-                            QTimer::singleShot(1000,this,[&]()mutable -> void{
-                                ui->progressBar->hide();
-                                this->hide();
-                                QTimer::singleShot(500,this,[&]()mutable -> void{
-                                    w->displayFilter(w->getSystemEnvironment()->getFilter());
-                                    w->show();
-                                });
-                            });
-                        });
                     }
                 });
             });
